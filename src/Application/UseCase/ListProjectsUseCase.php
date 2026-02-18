@@ -8,7 +8,7 @@ use App\Domain\Port\ProjectRepository;
 
 class ListProjectsUseCase
 {
-    private ProjectRepository $projectRepository;
+    private $projectRepository;
 
     public function __construct(ProjectRepository $projectRepository)
     {

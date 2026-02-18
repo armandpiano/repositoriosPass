@@ -7,7 +7,7 @@ namespace App\Infrastructure\Config;
 class Env
 {
     /** @var array<string, string> */
-    private array $vars = [];
+    private $vars = [];
 
     public function __construct(string $envFile)
     {

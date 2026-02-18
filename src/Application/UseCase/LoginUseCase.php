@@ -9,7 +9,7 @@ use App\Domain\Port\UserRepository;
 
 class LoginUseCase
 {
-    private UserRepository $userRepository;
+    private $userRepository;
 
     public function __construct(UserRepository $userRepository)
     {

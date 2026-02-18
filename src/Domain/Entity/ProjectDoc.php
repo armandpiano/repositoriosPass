@@ -6,11 +6,11 @@ namespace App\Domain\Entity;
 
 class ProjectDoc
 {
-    private int $id;
-    private int $projectId;
-    private string $htmlContent;
-    private \DateTimeImmutable $fetchedAt;
-    private string $hash;
+    private $id;
+    private $projectId;
+    private $htmlContent;
+    private $fetchedAt;
+    private $hash;
 
     public function __construct(int $id, int $projectId, string $htmlContent, \DateTimeImmutable $fetchedAt, string $hash)
     {

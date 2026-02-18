@@ -6,7 +6,7 @@ namespace App\Infrastructure\Security;
 
 class SessionManager
 {
-    private string $sessionName;
+    private $sessionName;
 
     public function __construct(string $sessionName)
     {

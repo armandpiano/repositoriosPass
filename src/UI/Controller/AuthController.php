@@ -10,9 +10,9 @@ use App\Infrastructure\Security\SessionManager;
 
 class AuthController
 {
-    private LoginUseCase $loginUseCase;
-    private LogoutUseCase $logoutUseCase;
-    private SessionManager $sessionManager;
+    private $loginUseCase;
+    private $logoutUseCase;
+    private $sessionManager;
 
     public function __construct(LoginUseCase $loginUseCase, LogoutUseCase $logoutUseCase, SessionManager $sessionManager)
     {

@@ -1,10 +1,10 @@
 {
   "name": "prosa/hexagonal-dashboard",
-  "description": "Aplicacion PHP 7.4 con arquitectura hexagonal, login y dashboard con DataTables y documentacion DOCX cacheada",
+  "description": "Aplicacion PHP 7.3.2 con arquitectura hexagonal, login y dashboard con DataTables y documentacion DOCX cacheada",
   "type": "project",
   "require": {
-    "php": "^7.4",
-    "phpoffice/phpword": "^1.1",
+    "php": ">=7.3.2",
+    "phpoffice/phpword": "^0.18.3",
     "ext-pdo": "*",
     "ext-curl": "*",
     "ext-zip": "*",

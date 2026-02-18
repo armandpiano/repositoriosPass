@@ -12,12 +12,12 @@ use App\Infrastructure\DocFetcher\HtmlSanitizer;
 
 class GetProjectDocUseCase
 {
-    private ProjectRepository $projectRepository;
-    private ProjectDocRepository $projectDocRepository;
-    private DocxDownloader $docxDownloader;
-    private DocxToHtmlConverter $docxToHtmlConverter;
-    private HtmlSanitizer $htmlSanitizer;
-    private int $cacheTtlHours;
+    private $projectRepository;
+    private $projectDocRepository;
+    private $docxDownloader;
+    private $docxToHtmlConverter;
+    private $htmlSanitizer;
+    private $cacheTtlHours;
 
     public function __construct(
         ProjectRepository $projectRepository,

@@ -6,11 +6,11 @@ namespace App\Domain\Entity;
 
 class Project
 {
-    private int $id;
-    private string $name;
-    private string $projectUrl;
-    private string $docxUrl;
-    private \DateTimeImmutable $createdAt;
+    private $id;
+    private $name;
+    private $projectUrl;
+    private $docxUrl;
+    private $createdAt;
 
     public function __construct(int $id, string $name, string $projectUrl, string $docxUrl, \DateTimeImmutable $createdAt)
     {

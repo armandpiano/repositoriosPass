@@ -8,7 +8,7 @@ use App\Infrastructure\Security\SessionManager;
 
 class DashboardController
 {
-    private SessionManager $sessionManager;
+    private $sessionManager;
 
     public function __construct(SessionManager $sessionManager)
     {

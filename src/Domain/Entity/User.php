@@ -6,10 +6,10 @@ namespace App\Domain\Entity;
 
 class User
 {
-    private int $id;
-    private string $username;
-    private string $passwordHash;
-    private \DateTimeImmutable $createdAt;
+    private $id;
+    private $username;
+    private $passwordHash;
+    private $createdAt;
 
     public function __construct(int $id, string $username, string $passwordHash, \DateTimeImmutable $createdAt)
     {

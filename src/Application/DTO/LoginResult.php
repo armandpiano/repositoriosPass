@@ -6,10 +6,10 @@ namespace App\Application\DTO;
 
 class LoginResult
 {
-    private bool $success;
-    private string $message;
-    private ?int $userId;
-    private ?string $username;
+    private $success;
+    private $message;
+    private $userId;
+    private $username;
 
     public function __construct(bool $success, string $message, ?int $userId = null, ?string $username = null)
     {

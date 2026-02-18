@@ -9,7 +9,7 @@ use App\Domain\Port\ProjectDocRepository;
 
 class PdoProjectDocRepository implements ProjectDocRepository
 {
-    private \PDO $pdo;
+    private $pdo;
 
     public function __construct(\PDO $pdo)
     {

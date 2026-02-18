@@ -6,7 +6,7 @@ namespace App\Infrastructure\Security;
 
 class AuthMiddleware
 {
-    private SessionManager $sessionManager;
+    private $sessionManager;
 
     public function __construct(SessionManager $sessionManager)
     {

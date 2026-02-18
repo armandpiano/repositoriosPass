@@ -9,7 +9,7 @@ use App\Domain\Port\UserRepository;
 
 class PdoUserRepository implements UserRepository
 {
-    private \PDO $pdo;
+    private $pdo;
 
     public function __construct(\PDO $pdo)
     {

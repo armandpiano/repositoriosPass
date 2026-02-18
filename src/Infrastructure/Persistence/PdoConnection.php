@@ -8,7 +8,7 @@ use App\Infrastructure\Config\Env;
 
 class PdoConnection
 {
-    private Env $env;
+    private $env;
 
     public function __construct(Env $env)
     {

@@ -9,8 +9,8 @@ use App\Application\UseCase\ListProjectsUseCase;
 
 class ApiController
 {
-    private ListProjectsUseCase $listProjectsUseCase;
-    private GetProjectDocUseCase $getProjectDocUseCase;
+    private $listProjectsUseCase;
+    private $getProjectDocUseCase;
 
     public function __construct(ListProjectsUseCase $listProjectsUseCase, GetProjectDocUseCase $getProjectDocUseCase)
     {
