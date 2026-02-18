@@ -1,0 +1,12 @@
+* text=auto eol=lf
+
+# Forzar como texto plano archivos del proyecto
+*.php text
+*.sql text
+*.md text
+*.json text
+*.css text
+*.js text
+*.htaccess text
+*.env text
+*.example text

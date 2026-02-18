@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# Si existe archivo o carpeta real, no reescribir
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Enviar todo al front controller
+RewriteRule ^ index.php [QSA,L]
