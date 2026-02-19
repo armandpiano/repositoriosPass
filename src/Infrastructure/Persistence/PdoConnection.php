@@ -17,9 +17,9 @@ class PdoConnection
 
     public function create(): \PDO
     {
-        $host = $this->env->get('DB_HOST', '127.0.0.1');
+        $host = $this->env->get('DB_HOST', 'localhost');
         $port = $this->env->get('DB_PORT', '3306');
-        $db = $this->env->get('DB_NAME', 'hexagonal_dashboard');
+        $db = $this->env->get('DB_NAME', 'repositoriospass');
         $user = $this->env->get('DB_USER', 'root');
         $pass = $this->env->get('DB_PASS', '');
 
