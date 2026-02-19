@@ -55,8 +55,17 @@ $apiController = new ApiController($listProjectsUseCase, $getProjectDocUseCase);
 $authMiddleware = new AuthMiddleware($sessionManager);
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-$path = is_string($path) ? $path : '/';
+$requestUriPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+$path = is_string($requestUriPath) ? $requestUriPath : '/';
+
+$basePath = trim($env->get('APP_BASE_PATH', ''), " 	\n\r\0\x0B");
+$basePath = '/' . trim($basePath, '/');
+$basePath = $basePath === '/' ? '' : rtrim($basePath, '/');
+
+if ($basePath !== '' && strpos($path, $basePath) === 0) {
+    $path = substr($path, strlen($basePath));
+    $path = $path === false || $path === '' ? '/' : $path;
+}
 
 if ($method === 'GET' && $path === '/login') {
     $authController->showLogin();
