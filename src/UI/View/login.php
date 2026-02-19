@@ -17,7 +17,7 @@ ob_start();
                         <i class="bi bi-exclamation-triangle-fill me-2"></i><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?>
                     </div>
                 <?php endif; ?>
-                <form method="post" action="/login" novalidate>
+                <form method="post" action="<?php echo htmlspecialchars($basePath . '/login', ENT_QUOTES, 'UTF-8'); ?>" novalidate>
                     <div class="mb-3">
                         <label class="form-label">Usuario</label>
                         <div class="input-group">

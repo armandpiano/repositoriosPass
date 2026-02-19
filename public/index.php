@@ -49,23 +49,28 @@ $getProjectDocUseCase = new GetProjectDocUseCase(
     $env->getInt('CACHE_TTL_HOURS', 24)
 );
 
-$authController = new AuthController($loginUseCase, $logoutUseCase, $sessionManager);
-$dashboardController = new DashboardController($sessionManager);
+$requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
+$basePath = preg_replace('#/public$#', '', rtrim($scriptDir, '/'));
+$basePath = is_string($basePath) ? rtrim($basePath, '/') : '';
+
+if ($basePath !== '' && strpos($requestPath, $basePath) === 0) {
+    $path = substr($requestPath, strlen($basePath));
+} else {
+    $path = $requestPath;
+}
+
+$path = '/' . ltrim((string) $path, '/');
+if ($path === '') {
+    $path = '/';
+}
+
+$authController = new AuthController($loginUseCase, $logoutUseCase, $sessionManager, $basePath);
+$dashboardController = new DashboardController($sessionManager, $basePath);
 $apiController = new ApiController($listProjectsUseCase, $getProjectDocUseCase);
-$authMiddleware = new AuthMiddleware($sessionManager);
+$authMiddleware = new AuthMiddleware($sessionManager, $basePath);
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-$requestUriPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-$path = is_string($requestUriPath) ? $requestUriPath : '/';
-
-$basePath = trim($env->get('APP_BASE_PATH', ''), " 	\n\r\0\x0B");
-$basePath = '/' . trim($basePath, '/');
-$basePath = $basePath === '/' ? '' : rtrim($basePath, '/');
-
-if ($basePath !== '' && strpos($path, $basePath) === 0) {
-    $path = substr($path, strlen($basePath));
-    $path = $path === false || $path === '' ? '/' : $path;
-}
 
 if ($method === 'GET' && $path === '/login') {
     $authController->showLogin();

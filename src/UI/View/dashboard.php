@@ -8,7 +8,7 @@ ob_start();
         <span class="navbar-brand fw-bold"><i class="bi bi-grid-1x2-fill me-2"></i>Hexagonal Dashboard</span>
         <div class="d-flex align-items-center gap-3 text-white">
             <span class="brand-pill"><i class="bi bi-person-circle me-1"></i><?php echo htmlspecialchars((string) ($user['username'] ?? 'N/A'), ENT_QUOTES, 'UTF-8'); ?></span>
-            <a href="/logout" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right me-1"></i>Salir</a>
+            <a href="<?php echo htmlspecialchars($basePath . '/logout', ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right me-1"></i>Salir</a>
         </div>
     </div>
 </nav>
@@ -52,8 +52,10 @@ ob_start();
 ?>
 <script>
 $(function () {
+    var basePath = <?php echo json_encode($basePath, JSON_UNESCAPED_SLASHES); ?>;
+
     var table = $('#projectsTable').DataTable({
-        ajax: '/api/projects',
+        ajax: basePath + '/api/projects',
         columns: [
             { data: 'name' },
             {
@@ -84,7 +86,7 @@ $(function () {
         $('#docModalContent').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-3 mb-0">Cargando documentacion...</p></div>');
         modal.show();
 
-        $.getJSON('/api/projects/' + id + '/doc')
+        $.getJSON(basePath + '/api/projects/' + id + '/doc')
             .done(function (response) {
                 if (response.success) {
                     $('#docModalContent').html(response.html);
