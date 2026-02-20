@@ -43,7 +43,7 @@ $listProjectsUseCase = new ListProjectsUseCase($projectRepository);
 $getProjectDocUseCase = new GetProjectDocUseCase(
     $projectRepository,
     $projectDocRepository,
-    new DocxDownloader(),
+    new DocxDownloader(dirname(__DIR__), $env->get('DOCUMENTATION_DIR', 'documentacion')),
     new DocxToHtmlConverter(),
     new HtmlSanitizer(),
     $env->getInt('CACHE_TTL_HOURS', 24)
