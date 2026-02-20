@@ -5,7 +5,7 @@ ob_start();
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-50 border-bottom border-light border-opacity-25">
     <div class="container-fluid px-4">
-        <span class="navbar-brand fw-bold"><i class="bi bi-grid-1x2-fill me-2"></i>Hexagonal Dashboard</span>
+        <span class="navbar-brand fw-bold"><i class="bi bi-grid-1x2-fill me-2"></i>Repositorio Proyectos PASS</span>
         <div class="d-flex align-items-center gap-3 text-white">
             <span class="brand-pill"><i class="bi bi-person-circle me-1"></i><?php echo htmlspecialchars((string) ($user['username'] ?? 'N/A'), ENT_QUOTES, 'UTF-8'); ?></span>
             <a href="<?php echo htmlspecialchars($basePath . '/logout', ENT_QUOTES, 'UTF-8'); ?>" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right me-1"></i>Salir</a>

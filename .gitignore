@@ -1,4 +1,5 @@
 /vendor/
+/documentacion/
 .env
 
 # Evitar subir binarios/adjuntos no permitidos

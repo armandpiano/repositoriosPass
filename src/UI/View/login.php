@@ -9,8 +9,8 @@ ob_start();
             <div class="glass-card rounded-4 p-4 p-md-5 text-white">
                 <div class="text-center mb-4">
                     <i class="bi bi-shield-lock-fill" style="font-size:3rem;"></i>
-                    <h1 class="h3 fw-bold mt-2 mb-1">Acceso Seguro</h1>
-                    <p class="mb-0 opacity-75">Dashboard Prosa Natural / Pass</p>
+                    <h1 class="h3 fw-bold mt-2 mb-1">Acceso </h1>
+                    <p class="mb-0 opacity-75">PROYECTOS PASS CONSULTORES</p>
                 </div>
                 <?php if (!empty($error)): ?>
                     <div class="alert alert-danger border-0 shadow-sm" role="alert">
@@ -33,7 +33,7 @@ ob_start();
                         </div>
                     </div>
                     <button class="btn btn-light text-primary fw-bold w-100 py-2 shadow" type="submit">
-                        <i class="bi bi-box-arrow-in-right me-1"></i>Ingresar al Dashboard
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Ingresar
                     </button>
                 </form>
             </div>

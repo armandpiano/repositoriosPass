@@ -1,5 +1,14 @@
 RewriteEngine On
+
+# evita que Apache muestre "Index of ..."
+Options -Indexes
+
+# la ruta raíz (vacía) debe ir al front controller
+RewriteRule ^$ public/index.php [L,QSA]
+
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
+
+# todo lo demás al front controller
 RewriteRule . public/index.php [L,QSA]
