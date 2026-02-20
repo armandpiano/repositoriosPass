@@ -7,75 +7,41 @@ namespace App\Infrastructure\DocFetcher;
 class DocxDownloader
 {
     private $projectRoot;
-    private $documentationDir;
+    private $directories;
 
-    public function __construct(string $projectRoot, string $documentationDir)
+    public function __construct(string $projectRoot, string $documentationDir, string $functionalityDir)
     {
         $this->projectRoot = rtrim($projectRoot, DIRECTORY_SEPARATOR);
-        $this->documentationDir = trim($documentationDir);
+        $this->directories = [
+            'doc' => trim($documentationDir),
+            'func' => trim($functionalityDir),
+        ];
     }
 
-    public function download(string $source): array
+    public function downloadByType(string $source, string $docType): array
     {
+        if (!array_key_exists($docType, $this->directories)) {
+            return ['success' => false, 'content' => '', 'message' => 'Tipo de documento no soportado.', 'reason' => 'invalid_type'];
+        }
+
         if (trim($source) === '') {
-            return ['success' => false, 'content' => '', 'message' => 'La referencia del documento no está configurada.', 'reason' => 'empty'];
+            return ['success' => false, 'content' => '', 'message' => 'El nombre del archivo no está configurado.', 'reason' => 'empty'];
         }
 
-        if ($this->isHttpUrl($source)) {
-            return $this->downloadRemote($source);
-        }
-
-        return $this->downloadLocal($source);
+        return $this->downloadLocal($source, $this->directories[$docType], $docType);
     }
 
-    private function isHttpUrl(string $source): bool
-    {
-        return preg_match('#^https?://#i', trim($source)) === 1;
-    }
-
-    private function downloadRemote(string $url): array
-    {
-        $ch = curl_init($url);
-        if ($ch === false) {
-            return ['success' => false, 'content' => '', 'message' => 'No fue posible iniciar la descarga del documento.', 'reason' => 'curl_init'];
-        }
-
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS => 3,
-            CURLOPT_CONNECTTIMEOUT => 8,
-            CURLOPT_TIMEOUT => 20,
-            CURLOPT_USERAGENT => 'HexagonalDashboard/1.0',
-        ]);
-
-        $content = curl_exec($ch);
-        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
-        curl_close($ch);
-
-        if (!is_string($content) || $content === '') {
-            return ['success' => false, 'content' => '', 'message' => 'No se pudo descargar el documento. ' . ($curlError !== '' ? 'Detalle: ' . $curlError : ''), 'reason' => 'download'];
-        }
-
-        if ($httpCode < 200 || $httpCode >= 300) {
-            return ['success' => false, 'content' => '', 'message' => 'No se pudo descargar el documento (HTTP ' . $httpCode . ').', 'reason' => 'http'];
-        }
-
-        return ['success' => true, 'content' => $content, 'message' => 'OK', 'reason' => 'remote'];
-    }
-
-    private function downloadLocal(string $docFileName): array
+    private function downloadLocal(string $docFileName, string $directoryName, string $docType): array
     {
         $safeFileName = basename(trim($docFileName));
         if ($safeFileName === '' || $safeFileName !== trim($docFileName) || strpos($safeFileName, '..') !== false) {
-            return ['success' => false, 'content' => '', 'message' => 'El nombre del archivo de documentación no es válido.', 'reason' => 'invalid_filename'];
+            return ['success' => false, 'content' => '', 'message' => 'El nombre del archivo de ' . $docType . ' no es válido.', 'reason' => 'invalid_filename'];
         }
 
-        $basePath = $this->projectRoot . DIRECTORY_SEPARATOR . trim($this->documentationDir, '/\\');
+        $basePath = $this->projectRoot . DIRECTORY_SEPARATOR . trim($directoryName, '/\\');
         $baseRealPath = realpath($basePath);
         if ($baseRealPath === false || !is_dir($baseRealPath)) {
-            return ['success' => false, 'content' => '', 'message' => 'No se encontró la carpeta de documentación configurada.', 'reason' => 'missing_dir'];
+            return ['success' => false, 'content' => '', 'message' => 'No se encontró la carpeta para ' . $docType . '.', 'reason' => 'missing_dir'];
         }
 
         $fullPath = $baseRealPath . DIRECTORY_SEPARATOR . $safeFileName;
@@ -91,7 +57,7 @@ class DocxDownloader
 
         $content = file_get_contents($realFilePath);
         if (!is_string($content) || $content === '') {
-            return ['success' => false, 'content' => '', 'message' => 'No fue posible leer el archivo de documentación.', 'reason' => 'read_error'];
+            return ['success' => false, 'content' => '', 'message' => 'No fue posible leer el archivo.', 'reason' => 'read_error'];
         }
 
         return ['success' => true, 'content' => $content, 'message' => 'OK', 'reason' => 'local'];

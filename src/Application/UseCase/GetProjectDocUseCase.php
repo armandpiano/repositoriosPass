@@ -35,40 +35,43 @@ class GetProjectDocUseCase
         $this->cacheTtlHours = $cacheTtlHours;
     }
 
-    public function execute(int $projectId): array
+    public function execute(int $projectId, string $docType): array
     {
-        $project = $this->projectRepository->findById($projectId);
-        if ($project === null) {
-            return ['success' => false, 'html' => '', 'message' => 'Proyecto no encontrado.'];
+        if (!in_array($docType, ['doc', 'func'], true)) {
+            return ['html' => $this->buildErrorHtml('Tipo de documento no soportado.'), 'title' => 'Documento', 'type' => $docType];
         }
 
-        $download = $this->docxDownloader->download($project->getDocxUrl());
-        if (!$download['success']) {
-            $html = '';
-            if (($download['reason'] ?? '') === 'not_found') {
-                $html = $this->buildNotFoundHtml((string) $download['message']);
-            }
+        $project = $this->projectRepository->findById($projectId);
+        if ($project === null) {
+            return ['html' => $this->buildErrorHtml('Proyecto no encontrado.'), 'title' => 'Documento', 'type' => $docType];
+        }
 
-            return ['success' => false, 'html' => $html, 'message' => (string) $download['message']];
+        $filename = $docType === 'doc' ? $project->getDocFilename() : $project->getFuncFilename();
+        $download = $this->docxDownloader->downloadByType($filename, $docType);
+        if (!$download['success']) {
+            return [
+                'html' => $this->buildErrorHtml((string) $download['message']),
+                'title' => $project->getName(),
+                'type' => $docType,
+            ];
         }
 
         $hash = hash('sha256', (string) $download['content']);
-        $cached = $this->projectDocRepository->findByProjectId($projectId);
+        $cached = $this->projectDocRepository->findByProjectIdAndType($projectId, $docType);
         if ($cached !== null && $this->isCacheValid($cached->getFetchedAt()) && hash_equals($cached->getHash(), $hash)) {
-            return ['success' => true, 'html' => $cached->getHtmlContent(), 'message' => 'OK (cache).'];
+            return ['html' => $cached->getHtmlContent(), 'title' => $project->getName(), 'type' => $docType];
         }
 
         try {
             $html = $this->docxToHtmlConverter->convertToHtml((string) $download['content']);
         } catch (\Throwable $exception) {
-            return ['success' => false, 'html' => '', 'message' => 'No fue posible convertir el documento en este momento.'];
+            return ['html' => $this->buildErrorHtml('No fue posible convertir el documento en este momento.'), 'title' => $project->getName(), 'type' => $docType];
         }
 
         $sanitized = $this->htmlSanitizer->sanitize($html);
-        $now = new \DateTimeImmutable('now');
-        $this->projectDocRepository->upsert($projectId, $sanitized, $now, $hash);
+        $this->projectDocRepository->upsert($projectId, $docType, $sanitized, new \DateTimeImmutable('now'), $hash);
 
-        return ['success' => true, 'html' => $sanitized, 'message' => 'OK (actualizado).'];
+        return ['html' => $sanitized, 'title' => $project->getName(), 'type' => $docType];
     }
 
     private function isCacheValid(\DateTimeImmutable $fetchedAt): bool
@@ -78,10 +81,10 @@ class GetProjectDocUseCase
         return $expiry >= new \DateTimeImmutable('now');
     }
 
-    private function buildNotFoundHtml(string $message): string
+    private function buildErrorHtml(string $message): string
     {
         $safeMessage = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
 
-        return '<section class="p-3"><div class="alert alert-warning mb-0"><h6 class="fw-bold mb-2"><i class="bi bi-file-earmark-x-fill me-2"></i>Archivo no encontrado</h6><p class="mb-0">' . $safeMessage . '</p></div></section>';
+        return '<section class="viewer-error"><i class="bi bi-file-earmark-x"></i><h6>Contenido no disponible</h6><p>' . $safeMessage . '</p></section>';
     }
 }

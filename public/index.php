@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Application\UseCase\GetProjectDocUseCase;
+use App\Application\UseCase\GetProjectVideoUseCase;
 use App\Application\UseCase\ListProjectsUseCase;
 use App\Application\UseCase\LoginUseCase;
 use App\Application\UseCase\LogoutUseCase;
@@ -19,6 +20,7 @@ use App\Infrastructure\Security\SessionManager;
 use App\UI\Controller\ApiController;
 use App\UI\Controller\AuthController;
 use App\UI\Controller\DashboardController;
+use App\UI\Controller\MediaController;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -43,11 +45,16 @@ $listProjectsUseCase = new ListProjectsUseCase($projectRepository);
 $getProjectDocUseCase = new GetProjectDocUseCase(
     $projectRepository,
     $projectDocRepository,
-    new DocxDownloader(dirname(__DIR__), $env->get('DOCUMENTATION_DIR', 'documentacion')),
+    new DocxDownloader(
+        dirname(__DIR__),
+        $env->get('DOCUMENTATION_DIR', 'documentacion'),
+        $env->get('FUNCTIONALITY_DIR', 'funcionalidad')
+    ),
     new DocxToHtmlConverter(),
     new HtmlSanitizer(),
     $env->getInt('CACHE_TTL_HOURS', 24)
 );
+$getProjectVideoUseCase = new GetProjectVideoUseCase($projectRepository);
 
 $requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
@@ -67,7 +74,8 @@ if ($path === '') {
 
 $authController = new AuthController($loginUseCase, $logoutUseCase, $sessionManager, $basePath);
 $dashboardController = new DashboardController($sessionManager, $basePath);
-$apiController = new ApiController($listProjectsUseCase, $getProjectDocUseCase);
+$apiController = new ApiController($listProjectsUseCase, $getProjectDocUseCase, $getProjectVideoUseCase, $basePath);
+$mediaController = new MediaController(dirname(__DIR__), $env->get('VIDEO_DIR', 'video'));
 $authMiddleware = new AuthMiddleware($sessionManager, $basePath);
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -99,8 +107,18 @@ if ($method === 'GET' && $path === '/api/projects') {
     exit;
 }
 
-if ($method === 'GET' && preg_match('#^/api/projects/(\d+)/doc$#', $path, $matches) === 1) {
-    $apiController->projectDoc((int) $matches[1]);
+if ($method === 'GET' && preg_match('#^/api/projects/(\d+)/(doc|func)$#', $path, $matches) === 1) {
+    $apiController->projectDoc((int) $matches[1], (string) $matches[2]);
+    exit;
+}
+
+if ($method === 'GET' && preg_match('#^/api/projects/(\d+)/video$#', $path, $matches) === 1) {
+    $apiController->projectVideo((int) $matches[1]);
+    exit;
+}
+
+if ($method === 'GET' && preg_match('#^/media/video/([^/]+)$#', $path, $matches) === 1) {
+    $mediaController->serveVideo((string) $matches[1]);
     exit;
 }
 

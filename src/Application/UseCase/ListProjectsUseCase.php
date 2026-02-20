@@ -23,6 +23,7 @@ class ListProjectsUseCase
             $rows[] = [
                 'id' => $project->getId(),
                 'name' => $project->getName(),
+                'company' => $project->getCompany(),
                 'project_url' => $project->getProjectUrl(),
             ];
         }

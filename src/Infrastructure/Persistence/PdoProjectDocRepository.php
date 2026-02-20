@@ -16,10 +16,13 @@ class PdoProjectDocRepository implements ProjectDocRepository
         $this->pdo = $pdo;
     }
 
-    public function findByProjectId(int $projectId): ?ProjectDoc
+    public function findByProjectIdAndType(int $projectId, string $docType): ?ProjectDoc
     {
-        $stmt = $this->pdo->prepare('SELECT id, project_id, html_content, fetched_at, hash FROM project_docs WHERE project_id = :project_id LIMIT 1');
-        $stmt->execute(['project_id' => $projectId]);
+        $stmt = $this->pdo->prepare('SELECT id, project_id, doc_type, html_content, fetched_at, hash FROM project_docs WHERE project_id = :project_id AND doc_type = :doc_type LIMIT 1');
+        $stmt->execute([
+            'project_id' => $projectId,
+            'doc_type' => $docType,
+        ]);
         $row = $stmt->fetch();
 
         if (!is_array($row)) {
@@ -29,20 +32,22 @@ class PdoProjectDocRepository implements ProjectDocRepository
         return new ProjectDoc(
             (int) $row['id'],
             (int) $row['project_id'],
+            (string) $row['doc_type'],
             (string) $row['html_content'],
             new \DateTimeImmutable((string) $row['fetched_at']),
             (string) $row['hash']
         );
     }
 
-    public function upsert(int $projectId, string $htmlContent, \DateTimeImmutable $fetchedAt, string $hash): void
+    public function upsert(int $projectId, string $docType, string $htmlContent, \DateTimeImmutable $fetchedAt, string $hash): void
     {
-        $sql = 'INSERT INTO project_docs (project_id, html_content, fetched_at, hash)
-                VALUES (:project_id, :html_content, :fetched_at, :hash)
+        $sql = 'INSERT INTO project_docs (project_id, doc_type, html_content, fetched_at, hash)
+                VALUES (:project_id, :doc_type, :html_content, :fetched_at, :hash)
                 ON DUPLICATE KEY UPDATE html_content = VALUES(html_content), fetched_at = VALUES(fetched_at), hash = VALUES(hash)';
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'project_id' => $projectId,
+            'doc_type' => $docType,
             'html_content' => $htmlContent,
             'fetched_at' => $fetchedAt->format('Y-m-d H:i:s'),
             'hash' => $hash,

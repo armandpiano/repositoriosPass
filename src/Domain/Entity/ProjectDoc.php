@@ -8,14 +8,16 @@ class ProjectDoc
 {
     private $id;
     private $projectId;
+    private $docType;
     private $htmlContent;
     private $fetchedAt;
     private $hash;
 
-    public function __construct(int $id, int $projectId, string $htmlContent, \DateTimeImmutable $fetchedAt, string $hash)
+    public function __construct(int $id, int $projectId, string $docType, string $htmlContent, \DateTimeImmutable $fetchedAt, string $hash)
     {
         $this->id = $id;
         $this->projectId = $projectId;
+        $this->docType = $docType;
         $this->htmlContent = $htmlContent;
         $this->fetchedAt = $fetchedAt;
         $this->hash = $hash;
@@ -29,6 +31,11 @@ class ProjectDoc
     public function getProjectId(): int
     {
         return $this->projectId;
+    }
+
+    public function getDocType(): string
+    {
+        return $this->docType;
     }
 
     public function getHtmlContent(): string
